@@ -43,7 +43,7 @@
         <protobuf.maven.plugin.version>0.6.1</protobuf.maven.plugin.version>
 
         <re2j.version>1.7</re2j.version>
-        <commons.validator.version>1.7</commons.validator.version>
+        <commons.validator.version>1.8.0</commons.validator.version>
         <grpc.version>1.56.0</grpc.version>
         <junit.version>4.13.2</junit.version>
         <assertj.version>3.24.2</assertj.version>
