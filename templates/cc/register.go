@@ -7,12 +7,13 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/envoyproxy/protoc-gen-validate/templates/shared"
 	"github.com/iancoleman/strcase"
 	pgs "github.com/lyft/protoc-gen-star/v2"
 	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/envoyproxy/protoc-gen-validate/templates/shared"
 )
 
 func RegisterModule(tpl *template.Template, params pgs.Parameters) {
@@ -116,6 +117,10 @@ func CcFilePath(f pgs.File, ctx pgsgo.Context, tpl *template.Template) *pgs.File
 func (fns CCFuncs) methodName(name interface{}) string {
 	nameStr := fmt.Sprintf("%s", name)
 	switch nameStr {
+	case "concept":
+		return "concept_"
+	case "requires":
+		return "requires_"
 	case "const":
 		return "const_"
 	case "inline":
@@ -162,12 +167,13 @@ func (fns CCFuncs) className(ent childEntity) string {
 }
 
 func (fns CCFuncs) packageName(msg pgs.Entity) string {
-	return "::" + strings.Join(msg.Package().ProtoName().Split(), "::")
+	return "::" + strings.Join(msg.Package().ProtoName().SplitOnDot(), "::")
 }
 
 func (fns CCFuncs) quote(s interface {
 	String() string
-}) string {
+},
+) string {
 	return strconv.Quote(s.String())
 }
 
@@ -262,7 +268,8 @@ func (fns CCFuncs) lit(x interface{}) string {
 
 func (fns CCFuncs) isBytes(f interface {
 	ProtoType() pgs.ProtoType
-}) bool {
+},
+) bool {
 	return f.ProtoType() == pgs.BytesT
 }
 
@@ -296,7 +303,7 @@ func (fns CCFuncs) inType(f pgs.Field, x interface{}) string {
 			return fns.className(f.Type().Element().Embed())
 		}
 	case pgs.EnumT:
-		var fldEn = f.Type().Enum()
+		fldEn := f.Type().Enum()
 		if f.Type().IsRepeated() {
 			fldEn = f.Type().Element().Enum()
 		}
@@ -433,7 +440,7 @@ func (fns CCFuncs) failUnimplemented(message string) string {
 }
 
 func (fns CCFuncs) staticVarName(msg pgs.Message) string {
-	return "validator_" + strings.Replace(fns.className(msg), ":", "_", -1)
+	return "validator_" + strings.ReplaceAll(fns.className(msg), ":", "_")
 }
 
 func (fns CCFuncs) output(file pgs.File, ext string) string {

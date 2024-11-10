@@ -4,11 +4,13 @@
 ![Release](https://img.shields.io/github/v/release/bufbuild/protoc-gen-validate?include_prereleases)
 ![Slack](https://img.shields.io/badge/slack-buf-%23e01563)
 
-**_New: The next generation of PGV, called [`protovalidate`][pv],
-is now available with a [beta release for Go][pv-go]! We're hard at work on C++,
-Java, TypeScript, and Python implementations as well. To learn more, check out 
-our [blog post][pv-announce]. We value your input in refining our products, so 
-don't hesitate to share your feedback on [`protovalidate`][pv]._**
+> [!IMPORTANT]
+> protoc-gen-validate (PGV) has reached a stable state and is in maintenance mode.
+>
+> We recommend that new and existing projects transition to using [`protovalidate`][pv].
+> 
+> Read [our blog post][pv-announce] if you want to learn more about the limitations of protoc-gen-validate and
+> how we have designed [`protovalidate`][pv] to be better.
 
 PGV is a protoc plugin to generate polyglot message validators. While protocol
 buffers effectively guarantee the types of structured data, they cannot enforce
@@ -31,7 +33,7 @@ message Person {
   string email = 2 [(validate.rules).string.email = true];
 
   string name = 3 [(validate.rules).string = {
-    pattern:   "^[^[0-9]A-Za-z]+( [^[0-9]A-Za-z]+)*$",
+    pattern:   "^[A-Za-z]+( [A-Za-z]+)*$",
     max_bytes: 256,
   }];
 
@@ -56,7 +58,7 @@ p.Id = 1000
 err = p.Validate() // err: Email must be a valid email address
 p.Email = "example@bufbuild.com"
 
-err = p.Validate() // err: Name must match pattern '^[^\d\s]+( [^\d\s]+)*$'
+err = p.Validate() // err: Name must match pattern '^[A-Za-z]+( [A-Za-z]+)*$'
 p.Name = "Protocol Buffer"
 
 err = p.Validate() // err: Home is required
@@ -101,7 +103,7 @@ go get -d github.com/envoyproxy/protoc-gen-validate
 > continue to use the `envoyproxy` module path.
 
 ```
-git clone github.com/bufbuild/protoc-gen-validate
+git clone https://github.com/bufbuild/protoc-gen-validate.git
 # installs PGV into $GOPATH/bin
 cd protoc-gen-validate && make build
 ```
@@ -1060,5 +1062,4 @@ docker run --rm \
 [re2]:             https://github.com/google/re2/wiki/Syntax
 [wkts]:            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf
 [pv]:              https://github.com/bufbuild/protovalidate
-[pv-go]:           https://github.com/bufbuild/protovalidate-go
 [pv-announce]:     https://buf.build/blog/protoc-gen-validate-v1-and-v2/

@@ -2,12 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
     <servers>
         <server>
-            <id>sonatype-nexus-snapshots</id>
-            <username>${env.SONATYPE_USER}</username>
-            <password>${env.SONATYPE_PASSWORD}</password>
-        </server>
-        <server>
-            <id>sonatype-nexus-staging</id>
+            <id>ossrh</id>
             <username>${env.SONATYPE_USER}</username>
             <password>${env.SONATYPE_PASSWORD}</password>
         </server>
@@ -23,19 +18,6 @@
     </servers>
     <profiles>
         <profile>
-            <id>ci</id>
-            <repositories>
-                <repository>
-                    <id>sonatype-staging</id>
-                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                    <layout>default</layout>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
             <id>signing</id>
             <properties>
                 <gpg.executable>gpg</gpg.executable>
@@ -45,7 +27,6 @@
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>ci</activeProfile>
         <activeProfile>signing</activeProfile>
     </activeProfiles>
 </settings>

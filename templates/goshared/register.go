@@ -8,12 +8,12 @@ import (
 	"text/template"
 
 	"github.com/iancoleman/strcase"
+	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/envoyproxy/protoc-gen-validate/templates/shared"
-	pgs "github.com/lyft/protoc-gen-star/v2"
-	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 )
 
 func Register(tpl *template.Template, params pgs.Parameters) {
@@ -114,11 +114,12 @@ func (fns goSharedFuncs) errIdxCause(ctx shared.RuleContext, idx, cause string, 
 	n := fns.Name(f)
 
 	var fld string
-	if idx != "" {
+	switch {
+	case idx != "":
 		fld = fmt.Sprintf(`fmt.Sprintf("%s[%%v]", %s)`, n, idx)
-	} else if ctx.Index != "" {
+	case ctx.Index != "":
 		fld = fmt.Sprintf(`fmt.Sprintf("%s[%%v]", %s)`, n, ctx.Index)
-	} else {
+	default:
 		fld = fmt.Sprintf("%q", n)
 	}
 
@@ -194,7 +195,8 @@ func (fns goSharedFuncs) lit(x interface{}) string {
 
 func (fns goSharedFuncs) isBytes(f interface {
 	ProtoType() pgs.ProtoType
-}) bool {
+},
+) bool {
 	return f.ProtoType() == pgs.BytesT
 }
 
@@ -226,7 +228,7 @@ func (fns goSharedFuncs) inType(f pgs.Field, x interface{}) string {
 		ens := fns.enumPackages(fns.externalEnums(f.File()))
 		// Check if the imported name of the enum has collided and been renamed
 		if len(ens) != 0 {
-			var enType = f.Type().Enum()
+			enType := f.Type().Enum()
 			if f.Type().IsRepeated() {
 				enType = f.Type().Element().Enum()
 			}
@@ -394,7 +396,7 @@ func (fns goSharedFuncs) enumPackages(enums []pgs.Enum) map[pgs.Name]NormalizedE
 
 		if collision, ok := nameCollision[pkgName]; ok {
 			nameCollision[pkgName] = collision + 1
-			pkgName = pkgName + pgs.Name(strconv.Itoa(nameCollision[pkgName]))
+			pkgName += pgs.Name(strconv.Itoa(nameCollision[pkgName]))
 		} else {
 			nameCollision[pkgName] = 0
 		}
